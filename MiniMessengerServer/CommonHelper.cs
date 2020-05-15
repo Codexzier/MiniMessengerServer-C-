@@ -1,6 +1,7 @@
 ﻿using MiniMessengerServer.Data;
 using System;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 
 namespace MiniMessengerServer
@@ -26,7 +27,7 @@ namespace MiniMessengerServer
 
         internal static Response GetOnlineUser(NameValueCollection queryString)
         {
-            if(long.TryParse(queryString.Get("userid"), out long userId))
+            if(long.TryParse(queryString.Get("id"), out long userId))
             {
                 _dataManager.UpdateUserAlive(userId);
 
@@ -41,20 +42,9 @@ namespace MiniMessengerServer
             return Response.CreateFail("No data");
         }
 
-        internal static Response SendCommand(NameValueCollection arg)
-        {
-            if(long.TryParse(arg.Get("deviceid"), out long deviceId))
-            {
-                
-            }
-
-
-            return Response.CreateFail("no device");
-        }
-
         internal static Response GetMessages(NameValueCollection queryString)
         {
-            if (long.TryParse(queryString.Get("userid"), out long userId) &&
+            if (long.TryParse(queryString.Get("id"), out long userId) &&
                 long.TryParse(queryString.Get("touserid"), out long toUserId))
             {
                 return new Response
@@ -69,8 +59,8 @@ namespace MiniMessengerServer
             {
                 sb.Append($"{item}, ");
             }
-            SimpleLogging.Log($"userid not valid. Keys: {sb}");
-            return Response.CreateFail("ERROR: Userid not valid");
+            SimpleLogging.Log($"id not valid. Keys: {sb}");
+            return Response.CreateFail("ERROR: User id not valid");
         }
 
         internal static Response AddUser(NameValueCollection queryString)
@@ -86,7 +76,7 @@ namespace MiniMessengerServer
 
         internal static Response SendMessage(NameValueCollection queryString)
         {
-            if (long.TryParse(queryString.Get("userid"), out long userId) &&
+            if (long.TryParse(queryString.Get("id"), out long userId) &&
                 long.TryParse(queryString.Get("touserid"), out long toUserid))
             {
                 string text = queryString.Get("messagetext");
@@ -101,7 +91,64 @@ namespace MiniMessengerServer
                 };
             }
 
-            return Response.CreateFail("userid not valid");
+            return Response.CreateFail("user id not valid");
         }
+
+        internal static Response GetAll(NameValueCollection queryString)
+        {
+            var devices = _deviceManager.GetDevices();
+
+            if(devices.Any())
+            {
+                return new Response
+                {
+                    Success = true,
+                    Content = devices
+                };
+            }
+
+            return Response.CreateFail("no devices registered");
+        }
+
+        internal static Response DeviceSendCommand(NameValueCollection queryString)
+        {
+            if (long.TryParse(queryString.Get("id"), out long deviceId) &&
+                long.TryParse(queryString.Get("value"), out long deviceValue))
+            {
+
+                var success = _deviceManager.SendCommand(deviceId, deviceValue, out string message) as bool?;
+
+                if(success == null)
+                {
+                    return Response.CreateFail("no device");
+                }
+
+                return new Response
+                {
+                    Success = success.Value,
+                    Content = message
+                };
+            }
+
+            return Response.CreateFail("check parameter for device id and value");
+        }
+
+        internal static Response DeviceGetValue(NameValueCollection queryString)
+        {
+            if (long.TryParse(queryString.Get("id"), out long deviceId))
+            {
+                var value = _deviceManager.GetValue(deviceId, out string message);
+
+                return new ResponseDevice
+                {
+                    Success = true,
+                    Content = message,
+                    Value = value
+                };
+            }
+
+            return Response.CreateFail("check parameter for device id");
+        }
+
     }
 }

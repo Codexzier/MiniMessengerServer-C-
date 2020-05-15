@@ -16,7 +16,10 @@ namespace MiniMessengerServer
             this._methods.Add("/getMessages", CommonHelper.GetMessages);
             this._methods.Add("/addUser", CommonHelper.AddUser);
             this._methods.Add("/sendMessage", CommonHelper.SendMessage);
-            this._methods.Add("/sendCommand", CommonHelper.SendCommand);
+
+            this._methods.Add("/deviceGetAll", CommonHelper.GetAll);
+            this._methods.Add("/deviceSendCommand", CommonHelper.DeviceSendCommand);
+            this._methods.Add("/deviceGetValue", CommonHelper.DeviceGetValue);
         }
 
         /// <summary>
