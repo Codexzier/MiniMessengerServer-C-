@@ -12,7 +12,7 @@ namespace MiniMessengerServer
 
         public MessengerManager()
         {
-            this._methods.Add("/getOnlineUser", CommonHelper.GetOnlineUser);
+            this._methods.Add("/getAllUsers", CommonHelper.GetOnlineUser);
             this._methods.Add("/getMessages", CommonHelper.GetMessages);
             this._methods.Add("/addUser", CommonHelper.AddUser);
             this._methods.Add("/sendMessage", CommonHelper.SendMessage);
