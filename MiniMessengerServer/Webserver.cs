@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiniMessengerServer
 {
+    [Obsolete]
     public class Webserver
     {
         private readonly HttpListener _listener = new HttpListener();

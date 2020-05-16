@@ -9,6 +9,8 @@ namespace MiniMessengerServer
         {
             SimpleLogging.Log("Server start");
             var messenger = new MessengerManager();
+
+            // TODO: Change webserver class
             var ws = new Webserver("http://localhost:5000/",
                 request =>
                 {
